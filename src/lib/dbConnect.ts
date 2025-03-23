@@ -14,17 +14,29 @@ async function dbConnect(): Promise<void> {
         console.log("Already connected to MongoDB");
         return;
     }
+    
+    // Make sure MONGODB_URI is defined
+    if (!process.env.MONGODB_URI) {
+        console.error("MONGODB_URI is not defined in environment variables");
+        throw new Error("MONGODB_URI is not defined");
+    }
+    
     // Connect to MongoDB
     try {
         const db = await mongoose.connect(process.env.MONGODB_URI!, {});
-        console.log(db);
         
         // Set the connection state
         connection.isConnected = db.connections[0].readyState;
-        console.log("Connected to MongoDB successfully");
+        
+        // Log connection state
+        if (connection.isConnected === 1) {
+            console.log("Connected to MongoDB successfully");
+        } else {
+            console.log(`MongoDB connection state: ${connection.isConnected}`);
+        }
     } catch (error) {
         console.error("Failed to connect to MongoDB:", error);
-        process.exit(1);
+        throw new Error("Failed to connect to MongoDB");
     }
 }
 

@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Model } from "mongoose";
 
 export interface Message extends Document {
     content: string;
@@ -65,6 +65,30 @@ export const userSchema = new Schema<User>({
     messages: [messageSchema],
 });
 
-const UserModel = (mongoose.models.User as mongoose.Model<User>) || mongoose.model<User>("User", userSchema);
+// Fix for Edge Runtime: use a function to get the model that safely handles both server and edge environments
+function getModel<T extends Document>(
+  modelName: string, 
+  schema: Schema
+): Model<T> {
+  // This is for Edge Runtime safety - wrap in try/catch
+  try {
+    // First try to get the existing model
+    return (mongoose.models[modelName] as Model<T>) || 
+           mongoose.model<T>(modelName, schema);
+  } catch (error) {
+    // If in Edge Runtime and models is undefined, just return a mock model
+    // This will allow the code to parse but actual DB operations should happen in API routes
+    if (process.env.NEXT_RUNTIME === 'edge') {
+      // Return a minimal mock for Edge Runtime
+      return {} as Model<T>;
+    }
+    
+    // For other errors, attempt to create the model
+    return mongoose.model<T>(modelName, schema);
+  }
+}
+
+// Use the safer function to get the model
+const UserModel = getModel<User>("User", userSchema);
 
 export default UserModel;

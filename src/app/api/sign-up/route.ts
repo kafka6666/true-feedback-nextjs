@@ -2,7 +2,6 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/user.model";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { sendVerificationEmail } from "@/utils/sendVerificationEmail";
 
 export async function POST(request: NextRequest) {
@@ -37,20 +36,48 @@ export async function POST(request: NextRequest) {
                 }, 
                 { status: 400 }
             );
-        } else {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            existingUserByEmail!.password = hashedPassword;
-            existingUserByEmail!.verifyCode = verifyCode;
-            existingUserByEmail!.verifyCodeExpiry = new Date(Date.now() + 3600000);
-            await existingUserByEmail!.save();
-        }
-
+        } 
+        
         // hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
         const expiryDate = new Date();
         expiryDate.setHours(expiryDate.getHours() + 1);
 
-        // create new user
+        // If user exists but is not verified, update their information
+        if (existingUserByEmail && !existingUserByEmail.isVerified) {
+            existingUserByEmail.username = username;
+            existingUserByEmail.password = hashedPassword;
+            existingUserByEmail.verifyCode = verifyCode;
+            existingUserByEmail.verifyCodeExpiry = expiryDate;
+            await existingUserByEmail.save();
+            
+            // send verification email
+            const emailResponse = await sendVerificationEmail({
+                email: existingUserByEmail.email,
+                username: existingUserByEmail.username,
+                otp: existingUserByEmail.verifyCode
+            });
+
+            if (!emailResponse.success) {
+                return NextResponse.json(
+                    { 
+                        success: false,
+                        message: emailResponse.message
+                    }, 
+                    { status: 500 }
+                );
+            }
+
+            return NextResponse.json(
+                { 
+                    success: true,
+                    message: "User registration updated. Please verify your email to complete registration."
+                }, 
+                { status: 200 }
+            );
+        }
+
+        // If no existing user, create a new one
         const newUser = new UserModel({
             username,
             email,
