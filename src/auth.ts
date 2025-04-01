@@ -3,19 +3,6 @@ import Credentials from "next-auth/providers/credentials"
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/user.model";
 import bcrypt from "bcryptjs";
-import { ObjectId } from "mongoose";
-
-// Define a custom adapter type that works with Mongoose
-type MongooseUser = {
-  _id: ObjectId | string;
-  username: string;
-  email: string;
-  password: string;
-  verifyCode: string;
-  verifyCodeExpiry: Date;
-  isVerified: boolean;
-  isAcceptingMessage: boolean;
-}
 
 // Use API routes instead of direct DB access from auth.ts
 export const { handlers, signIn, signOut, auth } = NextAuth({

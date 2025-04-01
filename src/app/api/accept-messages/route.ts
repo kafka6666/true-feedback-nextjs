@@ -62,7 +62,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
     await dbConnect();
 
     // get session from auth

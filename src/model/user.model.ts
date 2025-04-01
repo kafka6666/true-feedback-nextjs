@@ -1,3 +1,4 @@
+import { console } from "inspector";
 import mongoose, { Document, Schema, Model } from "mongoose";
 
 export interface Message extends Document {
@@ -82,6 +83,8 @@ function getModel<T extends Document>(
       // Return a minimal mock for Edge Runtime
       return {} as Model<T>;
     }
+
+    console.log(error);
     
     // For other errors, attempt to create the model
     return mongoose.model<T>(modelName, schema);

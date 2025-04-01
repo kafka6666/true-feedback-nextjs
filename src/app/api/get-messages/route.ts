@@ -1,12 +1,11 @@
 import {auth} from "@/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import type { User } from "@/model/user.model";
 import UserModel from "@/model/user.model";
 import dbConnect from "@/lib/dbConnect";
 import mongoose from "mongoose";
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
     await dbConnect();
 
     // get session from auth

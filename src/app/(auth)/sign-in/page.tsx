@@ -1,9 +1,9 @@
-import SignIn from "@/components/Sign-In"
- 
-export default function SignInPage() {
+import React from 'react'
+
+const SignInPage = () => {
   return (
-    <div className="flex justify-center items-center h-screen">
-      <SignIn />
-    </div>
+    <div>SignIn Page</div>
   )
 }
+
+export default SignInPage
