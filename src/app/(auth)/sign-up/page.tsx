@@ -46,15 +46,26 @@ export default function SignUpPage() {
         setUsernameMessage('');
 
         try {
-          const response = await axios.get<ApiResponse>(`/api/check-usrnm-unique?username=${username}`);
+          const response = await axios.get<ApiResponse>(`/api/check-usrnm-unique?username=${encodeURIComponent(username)}`);
           const { message } = response.data;
+          console.log(response);
           setUsernameMessage(message);
-        } catch (error) {
-          const axiosError = error as Error;
-          // Only set error message if it's a validation error, not for empty checks
-          if (username.trim().length >= 3) {
-            setUsernameMessage(axiosError.message);
-            console.error("Error checking username: ", error);
+        } catch (error: unknown) {
+          console.error("Error checking username: ", error);
+          
+          if ((error as { response?: { status: number, data?: { message?: string } } }).response) {
+            const status = (error as { response: { status: number } }).response.status;
+            const errorMessage = (error as { response: { data?: { message?: string } } }).response.data?.message || "Error checking username";
+            
+            if (status === 400) {
+              setUsernameMessage(errorMessage);
+            } else if (status === 409) {
+              setUsernameMessage('Username is already taken');
+            } else {
+              setUsernameMessage('Error checking username availability');
+            }
+          } else {
+            setUsernameMessage('Network error. Please try again.');
           }
         } finally {
           setIsCheckingUsername(false);
@@ -86,11 +97,16 @@ export default function SignUpPage() {
       } else {
         setUsernameMessage(response.data.message);
       }
-    } catch (error) {
-      const axiosError = error as Error;
-      setUsernameMessage(axiosError.message);
-      console.error("Error in signing up of user: ", axiosError);
-      toast.error(axiosError.message);
+    } catch (error: unknown) {
+      console.error("Error in signing up of user: ", error);
+      
+      if ((error as { response?: { data?: { message?: string } } }).response) {
+        const errorMessage = (error as { response: { data?: { message?: string } } }).response.data?.message || "Error during sign up";
+        setUsernameMessage(errorMessage);
+        toast.error(errorMessage);
+      } else {
+        toast.error("Network error. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
