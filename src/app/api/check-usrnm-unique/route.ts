@@ -44,7 +44,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     success: false,
                     message: "Username is already taken"
                 },
-                {status: 400}
+                {status: 409}
             );
         }
 

@@ -40,12 +40,10 @@ const VerifyAccountPage = () => {
             } else {
                 toast.error(response.data.message || "Verification failed");
             }
-        } catch (error: unknown) {
-            console.error("Error in verification of user: ", error);
-            
+        } catch (error) {
             // Handle different error status codes
-            if ((error as { response?: { data?: { message?: string } } }).response) {
-                const errorMessage = (error as { response: { data?: { message?: string } } }).response.data?.message || "Verification failed";
+            if (axios.isAxiosError(error) && error.response) {
+                const errorMessage = error.response.data?.message || "Verification failed";
                 toast.error(errorMessage);
             } else {
                 toast.error("Network error. Please try again.");

@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
-export default function SignUpPage() {
+const SignUpPage = () => {
   const [username, setUsername] = useState<string>('');
   const [usernameMessage, setUsernameMessage] = useState<string>('');
   const [isCheckingUsername, setIsCheckingUsername] = useState<boolean>(false);
@@ -48,19 +48,15 @@ export default function SignUpPage() {
         try {
           const response = await axios.get<ApiResponse>(`/api/check-usrnm-unique?username=${encodeURIComponent(username)}`);
           const { message } = response.data;
-          console.log(response);
           setUsernameMessage(message);
-        } catch (error: unknown) {
-          console.error("Error checking username: ", error);
-          
-          if ((error as { response?: { status: number, data?: { message?: string } } }).response) {
-            const status = (error as { response: { status: number } }).response.status;
-            const errorMessage = (error as { response: { data?: { message?: string } } }).response.data?.message || "Error checking username";
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+            const errorMessage = error.response.data?.message || "Error checking username";
             
-            if (status === 400) {
+            if (error.response.status === 400) {
               setUsernameMessage(errorMessage);
-            } else if (status === 409) {
-              setUsernameMessage('Username is already taken');
+            } else if (error.response.status === 409) {
+              setUsernameMessage(errorMessage);
             } else {
               setUsernameMessage('Error checking username availability');
             }
@@ -70,7 +66,7 @@ export default function SignUpPage() {
         } finally {
           setIsCheckingUsername(false);
         }
-      } else if (username.trim() !== '') {
+      } else if (username && username.trim() !== '') {
         // If username exists but is too short, show appropriate message
         setUsernameMessage("Username must be at least 3 characters long");
         setIsCheckingUsername(false);
@@ -97,11 +93,9 @@ export default function SignUpPage() {
       } else {
         setUsernameMessage(response.data.message);
       }
-    } catch (error: unknown) {
-      console.error("Error in signing up of user: ", error);
-      
-      if ((error as { response?: { data?: { message?: string } } }).response) {
-        const errorMessage = (error as { response: { data?: { message?: string } } }).response.data?.message || "Error during sign up";
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data?.message || "Error during sign up";
         setUsernameMessage(errorMessage);
         toast.error(errorMessage);
       } else {
@@ -212,3 +206,5 @@ export default function SignUpPage() {
     </div>
   )
 }
+
+export default SignUpPage;
