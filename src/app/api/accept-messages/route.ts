@@ -10,7 +10,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     
     // get session from auth
     const session = await auth();
-    console.log(session);
 
     // check if user is authenticated
     const user = session?.user as User;
@@ -24,12 +23,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const userId = user._id as string;
-    const {acceptMessages} = await req.json();
+    const { acceptMessages } = await req.json();
 
     try {
         const updatedUser = await UserModel.findByIdAndUpdate(
             userId, 
-            {isAcceptingMessages: acceptMessages as string},
+            {isAcceptingMessage: acceptMessages},
             {new: true}
         );
 
@@ -67,7 +66,6 @@ export async function GET(): Promise<NextResponse> {
 
     // get session from auth
     const session = await auth();
-    console.log(session);
 
     // check if user is authenticated
     const user = session?.user as User;
@@ -96,7 +94,7 @@ export async function GET(): Promise<NextResponse> {
             {
                 success: true,
                 message: "User found successfully",
-                isAcceptingMessage: foundUser.isAcceptingMessage
+                isAcceptingMessages: foundUser.isAcceptingMessage
             },
             { status: 200 }
         );
