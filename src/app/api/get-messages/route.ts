@@ -10,7 +10,6 @@ export async function GET(): Promise<NextResponse> {
 
     // get session from auth
     const session = await auth();
-    // Remove excessive logging
 
     // check if user is authenticated
     const user = session?.user as User;

@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "title": "Message from user123",
+        "content": "Hey, how are you doing today?",
+        "received": "2 days ago"
+    },
+    {
+        "id": "2",
+        "title": "Message from SecretAdmirer",
+        "content": "I really liked your recent post!",
+        "received": "1 day ago"
+    },
+    {
+        "id": "3",
+        "title": "Message from mysteryguest",
+        "content": "Do you have any book recommendations?",
+        "received": "18 hours ago"
+    },
+    {
+        "id": "4",
+        "title": "Message from user786",
+        "content": "I need some help with my project. Anyone available out there?",
+        "received": "10 minutes ago"
+    }
+]
