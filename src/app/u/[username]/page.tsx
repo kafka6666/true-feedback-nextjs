@@ -80,7 +80,8 @@ export default function SendMessage() {
 
   const fetchSuggestedMessages = async () => {
     try {
-      complete('');
+      complete('Please suggest some messages for me');
+
     } catch (error) {
       console.error('Error fetching messages:', error);
       // Handle error appropriately

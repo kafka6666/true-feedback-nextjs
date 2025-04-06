@@ -16,7 +16,6 @@ import { Loader2, RefreshCcw } from "lucide-react";
 import MessageCard from "@/components/MessageCard";
 
 const DashboardPage = () => {
-  // All hooks must be called at the top level, before any conditional returns
   const { data: session } = useSession();
   const [ messages, setMessages ] = useState<Message[]>([]);
   const [ isLoading, setIsLoading ] = useState<boolean>(false);
@@ -66,7 +65,7 @@ const DashboardPage = () => {
     if (!session || !session.user) return;
     fetchMessages();
     fetchAcceptMessage();
-  }, [session, fetchMessages, fetchAcceptMessage]);
+  }, [session,fetchMessages, fetchAcceptMessage]);
 
   // Handle Delete Message
   const handleDeleteMessage = (messageId: string) => {
@@ -92,7 +91,7 @@ const DashboardPage = () => {
     }
   };
 
-  // Early return after all hooks
+  // Return after all hooks if user session not found
   if (!session || !session.user) return null;
   
   // Handle copy to clipboard
@@ -130,7 +129,7 @@ const DashboardPage = () => {
         <Switch 
           {...register('acceptMessages')}
           disabled={isSwitchLoading}
-          checked={acceptMessages}
+          // checked={acceptMessages}
           onCheckedChange={handleSwitchChange}
         />
         <span className="ml-2">
