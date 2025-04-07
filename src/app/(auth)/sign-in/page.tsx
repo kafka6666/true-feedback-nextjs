@@ -29,27 +29,42 @@ const SignInPage = () => {
 
   // handle onSubmit functionality after submitting the form
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-    setIsSubmitting(true);
-    const result = await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-    });
-    console.log(result);
-
-    if (result?.error) {
-      if (result.error === 'CredentialsSignin') {
-        toast.error('Incorrect email or password');
-      } else {
-        toast.error(result.error);
+    try {
+      setIsSubmitting(true);
+      
+      // Use callbackUrl to ensure consistent redirection behavior
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+        callbackUrl: "/dashboard",
+      });
+      
+      if (result?.error) {
+        if (result.error === 'CredentialsSignin') {
+          toast.error('Incorrect email or password');
+        } else {
+          toast.error(result.error);
+        }
+        setIsSubmitting(false);
+        return;
       }
+      
+      if (result?.ok) {
+        toast.success("Login successful");
+        // Add a small delay before redirection to ensure auth state is properly updated
+        setTimeout(() => {
+          router.push('/dashboard');
+          router.refresh(); // Force a refresh to ensure auth state is updated
+        }, 100);
+      } else {
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Sign-in error:", error);
+      toast.error("An unexpected error occurred");
+      setIsSubmitting(false);
     }
-
-    if (result?.url) {
-      toast.success("Login successful");
-      router.replace('/dashboard');
-    }
-    setIsSubmitting(false);
   };
 
   return (
