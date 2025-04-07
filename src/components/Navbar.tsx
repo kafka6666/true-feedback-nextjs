@@ -9,6 +9,12 @@ const Navbar = () => {
     const { data: session } = useSession();
     const user = session?.user as User;
 
+    const handleSignOut = () => {
+        signOut({
+            callbackUrl: "/",
+        });
+    };
+
   return (
     <nav className="p-4 md:p-6 shadow-md">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
@@ -25,7 +31,7 @@ const Navbar = () => {
                     </span>
                     <Button 
                         className="m-auto rounded"
-                        onClick={() => signOut()}>
+                        onClick={handleSignOut}>
                             Sign Out
                     </Button>
                 </div>
