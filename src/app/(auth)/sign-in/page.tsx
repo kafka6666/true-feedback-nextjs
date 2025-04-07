@@ -37,7 +37,6 @@ const SignInPage = () => {
         email: data.email,
         password: data.password,
         redirect: false,
-        callbackUrl: "/dashboard",
       });
       
       if (result?.error) {
@@ -52,11 +51,12 @@ const SignInPage = () => {
       
       if (result?.ok) {
         toast.success("Login successful");
-        // Add a small delay before redirection to ensure auth state is properly updated
+        // Increase timeout to ensure session is fully established
         setTimeout(() => {
-          router.push('/dashboard');
+          // Use the callbackUrl from the result if available, otherwise default to dashboard
+          router.push(result.url || '/dashboard');
           router.refresh(); // Force a refresh to ensure auth state is updated
-        }, 100);
+        }, 500); // Increased from 100ms to 500ms
       } else {
         setIsSubmitting(false);
       }
