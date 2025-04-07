@@ -10,9 +10,7 @@ const Navbar = () => {
     const user = session?.user as User;
 
     const handleSignOut = () => {
-        signOut({
-            callbackUrl: "/",
-        });
+        signOut();
     };
 
   return (
